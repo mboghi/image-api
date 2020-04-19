@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "preLaunchTask": "typescript",
+      "preLaunchTask": "tsc: build - tsconfig.json",
       "program": "${workspaceFolder}\\src\\server.ts",
       "cwd": "${workspaceFolder}",
       "protocol": "inspector",

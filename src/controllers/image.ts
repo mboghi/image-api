@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 import rootDir from "../util/path";
 
-var mime: { [key: string]: string } = {
+const mime: { [key: string]: string } = {
   html: 'text/html',
   txt: 'text/plain',
   css: 'text/css',
@@ -19,8 +19,6 @@ export class ImageController {
   private imgDir: string;
 
   constructor() {
-    console.log("Root Dir");
-    console.log(rootDir);
     this.imgDir = path.join(rootDir, '..', 'images');
   }
 
