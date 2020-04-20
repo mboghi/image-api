@@ -1,8 +1,9 @@
 import * as path from "path";
-import * as jimp from "jimp";
 import * as fs from "fs";
+import { Service } from "typedi";
 
 import rootDir from "../util/path";
+import { ImageService } from "../services/image";
 
 const mime: { [key: string]: string } = {
   html: 'text/html',
@@ -15,10 +16,13 @@ const mime: { [key: string]: string } = {
   js: 'application/javascript'
 };
 
+@Service()
 export class ImageController {
   private imgDir: string;
+  private imageService: ImageService;
 
-  constructor() {
+  constructor(imageService: ImageService) {
+    this.imageService = imageService;
     this.imgDir = path.join(rootDir, '..', 'images');
   }
 
@@ -30,14 +34,8 @@ export class ImageController {
 
     var width = Number(req.query.width);
     var height = Number(req.query.height);
-    var extension = path.extname(file);
-    var imgPath = file.replace(extension, '_' + width + 'x' + height + extension)
 
-    const image = await jimp.read(file);
-    if (width && height) {
-      image.resize(width, height);
-    }
-    await image.writeAsync(imgPath);
+    var imgPath = await this.imageService.resizeImage(file, width, height);
 
     var extName: string = path.extname(imgPath).slice(1);
     var type = mime[extName] || 'text/plain';
@@ -52,5 +50,3 @@ export class ImageController {
     });
   };
 }
-
-export const imageController = new ImageController();
