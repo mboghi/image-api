@@ -3,24 +3,26 @@ import * as jimp from "jimp";
 import * as fs from 'fs';
 import { Service } from "typedi";
 
+import { Image } from "models/image";
+
 @Service()
 export class ImageService {
 
-  public async resizeImage(imgPath: string, width: number, height: number): Promise<string> {
-    let extension = path.extname(imgPath);
+  public async resizeImage(imageSpecs: Image): Promise<string> {
+    let extension = path.extname(imageSpecs.path);
     let resizedExt: string = extension;
-    if (width > 0 && height > 0) {
-      resizedExt = `_${width}x${height}${extension}`;
+    if (imageSpecs.width > 0 && imageSpecs.height > 0) {
+      resizedExt = `_${imageSpecs.width}x${imageSpecs.height}${extension}`;
     }
-    let newImgPath = imgPath.replace(extension, resizedExt);
+    let newImgPath = imageSpecs.path.replace(extension, resizedExt);
 
     try {
       await fs.promises.access(newImgPath);
     }
     catch (error) {
-      const image = await jimp.read(imgPath);
+      const image = await jimp.read(imageSpecs.path);
       if (resizedExt !== extension) {
-        image.resize(width, height);
+        image.resize(imageSpecs.width, imageSpecs.height);
       }
       await image.writeAsync(newImgPath);
     }

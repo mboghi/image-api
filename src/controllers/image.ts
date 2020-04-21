@@ -4,6 +4,7 @@ import { Service } from "typedi";
 
 import { PathUtils } from "../util/path";
 import { ImageService } from "../services/image";
+import { Image } from "models/image";
 
 const mime: { [key: string]: string } = {
   html: 'text/html',
@@ -32,31 +33,17 @@ export class ImageController {
       return res.status(403).end('Forbidden');
     }
 
-    let width: number = 0;
-    let height: number = 0;
-    let imgSize: string = req.query?.size;
-    if (imgSize && imgSize.length > 0) {
-      let sizes: string[] = (req.query.size as string)?.toLowerCase().split('x');
-      if (sizes.length !== 2) {
-        res.set('Content-Type', 'text/plain');
-        return res.status(400).end('Query parameter size has a bad format! It should be size=(width)x(height)');
-      }
-      let errorMsg: string = "";
-      width = Number(sizes[0]);
-      if (Number.isNaN(width) || width <= 0) {
-        errorMsg = `Value ${sizes[0]} for width is not a valid number.`;
-      }
-      height = Number(sizes[1]);
-      if (Number.isNaN(height) || height <= 0) {
-        errorMsg += `\nValue ${sizes[1]} for height is not a valid number.`;
-      }
-      if (errorMsg !== "") {
-        res.set('Content-Type', 'text/plain');
-        return res.status(400).end(errorMsg);
-      }
+    let image: Image;
+    try {
+      image = this.parseRequestQuery(res.query);
+    }
+    catch (error) {
+      res.set('Content-Type', 'text/plain');
+      return res.status(400).end(error.message);
     }
 
-    let imgPath = await this.imageService.resizeImage(file, width, height);
+    image.path = file;
+    let imgPath = await this.imageService.resizeImage(image);
 
     let extName: string = path.extname(imgPath).slice(1);
     let type = mime[extName] || 'text/plain';
@@ -70,4 +57,31 @@ export class ImageController {
       res.status(404).end('Not found');
     });
   };
+
+  private parseRequestQuery(queryString: any): Image {
+    let width: number = 0;
+    let height: number = 0;
+    let imgSize: string = queryString?.size.toLowerCase();
+    if (imgSize && imgSize.length > 0) {
+      let sizes: string[] = imgSize.split('x');
+      if (sizes.length !== 2) {
+        throw new Error('Query parameter size has a bad format! It should be size=(width)x(height)');
+      }
+      let errorMsg: string = "";
+      width = Number(sizes[0]);
+      if (Number.isNaN(width) || width <= 0) {
+        errorMsg = `Value ${sizes[0]} for width is not a valid number.`;
+      }
+      height = Number(sizes[1]);
+      if (Number.isNaN(height) || height <= 0) {
+        errorMsg += `\nValue ${sizes[1]} for height is not a valid number.`;
+      }
+      if (errorMsg !== "") {
+        throw new Error(errorMsg);
+      }
+    }
+
+    let img: Image = { width: width, height: height, path: '' };
+    return img;
+  }
 }
