@@ -35,7 +35,7 @@ export class ImageController {
 
     let image: Image;
     try {
-      image = this.parseRequestQuery(res.query);
+      image = this.parseRequestQuery(req.query);
     }
     catch (error) {
       res.set('Content-Type', 'text/plain');
