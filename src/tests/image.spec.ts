@@ -9,6 +9,7 @@ import { ImageService } from "../services/image";
 import * as rootDir from "../util/path";
 import server from "../app";
 import { PathUtils } from "../util/path";
+import { Image } from "models/image";
 
 let pathUtils = Container.get(PathUtils);
 let should = chai.should();
@@ -25,7 +26,8 @@ describe("Image service function", () => {
     };
     let imgPath = path.join(pathUtils.imagesPath, 'plane.jfif');
     let imageService = Container.get(ImageService);
-    const rsImgPath = await imageService.resizeImage(imgPath, 200, 200);
+    let img: Image = { path: imgPath, width: 200, height: 200 };
+    const rsImgPath = await imageService.resizeImage(img);
 
     expect(rsImgPath).to.equal(path.join(pathUtils.imagesPath, 'plane_200x200.jfif'));
   });
