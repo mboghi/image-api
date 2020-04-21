@@ -11,7 +11,7 @@ class MainRoutes {
   }
 
   private config(): void {
-    var imageController = Container.get(ImageController);
+    let imageController = Container.get(ImageController);
     this.router.get("*", (req: express.Request, res: express.Response) => imageController.resize(req, res));
   }
 }
