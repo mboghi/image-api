@@ -20,15 +20,15 @@ const mime: { [key: string]: string } = {
 @Service()
 export class ImageController {
   private imageService: ImageService;
-  private pathUtils: PathUtils;
+  private pathUtils: PathUtils = PathUtils.getInstance();
 
-  constructor(imageService: ImageService, pathUtils: PathUtils) {
+  constructor(imageService: ImageService) {
     this.imageService = imageService;
-    this.pathUtils = pathUtils;
   }
 
   public async resize(req: any, res: any): Promise<void> {
-    let file = path.join(this.pathUtils.imagesPath, req.path);
+    let imgName = (req.path as string).replace('/image', '');
+    let file = path.join(this.pathUtils.imagesPath, imgName);
     if (file.indexOf(this.pathUtils.imagesPath + path.sep) !== 0) {
       return res.status(403).end('Forbidden');
     }
@@ -61,9 +61,9 @@ export class ImageController {
   private parseRequestQuery(queryString: any): Image {
     let width: number = 0;
     let height: number = 0;
-    let imgSize: string = queryString?.size.toLowerCase();
+    let imgSize: string = queryString?.size;
     if (imgSize && imgSize.length > 0) {
-      let sizes: string[] = imgSize.split('x');
+      let sizes: string[] = imgSize.toLowerCase().split('x');
       if (sizes.length !== 2) {
         throw new Error('Query parameter size has a bad format! It should be size=(width)x(height)');
       }
