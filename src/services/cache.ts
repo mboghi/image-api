@@ -1,5 +1,7 @@
-import { PathUtils } from '../util/path';
+import path from 'path';
 import fs from 'fs';
+
+import { PathUtils } from '../util/path';
 import { UsageStats } from '../util/stats';
 import { Service } from 'typedi';
 
@@ -23,7 +25,11 @@ export class ImagesCache {
         }
         let existingItem = existingItems[0];
         if (existingItem.newHits === 0 && !existingItem.isOriginal) {
-          fs.unlink(file, (err) => { });
+          fs.unlink(path.join(this.pathUtils.imagesPath, file), (err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
           this.usageStats.cachedImages.splice(this.usageStats.cachedImages.indexOf(existingItem), 1);
           return;
         }
@@ -52,6 +58,7 @@ export class ImagesCache {
     newImagePath = newImagePath.replace(this.pathUtils.imagesPath + '\\', '');
     let existingItems = this.usageStats.cachedImages.filter((item) => item.path === newImagePath);
     if (existingItems.length == 1) {
+      existingItems[0].newHits += 1;
       return;
     }
     this.usageStats.cachedImages.push({

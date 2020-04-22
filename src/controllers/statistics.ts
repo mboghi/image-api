@@ -29,7 +29,7 @@ export class StatisticsController {
       originalImagesNo: this.usageStats.originalImagesNo(),
       resizedImagesNo: this.usageStats.resizedImagesNo()
     };
-    this.cache.performCacheCleanup();
+    //this.cache.performCacheCleanup();
     res.set('Content-Type', 'application/json');
     res.end(JSON.stringify(stats));
   }

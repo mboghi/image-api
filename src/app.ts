@@ -25,7 +25,8 @@ class App {
       res.status(404).end();
     });
 
-    this.cache.performCacheCleanup();
+    setInterval(() => this.cache.performCacheCleanup(), 1000 * 60);
+    //this.cache.performCacheCleanup();
   }
 }
 
