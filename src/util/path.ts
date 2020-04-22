@@ -1,13 +1,20 @@
 import * as path from "path";
 import * as process from 'process';
-import { Service } from "typedi";
 
-@Service()
 export class PathUtils {
+  private static instance: PathUtils;
   public rootPath: string;
   public imagesPath: string = "C:\\Repository\\node\\image-api\\images";
 
-  constructor() {
+  private constructor() {
     this.rootPath = path.dirname(process.mainModule?.filename ?? "");
+  }
+
+  static getInstance(): PathUtils {
+    if (!PathUtils.instance) {
+      PathUtils.instance = new PathUtils();
+    }
+
+    return PathUtils.instance;
   }
 }

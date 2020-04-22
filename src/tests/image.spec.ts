@@ -6,12 +6,11 @@ import "mocha";
 import Container from "typedi";
 
 import { ImageService } from "../services/image";
-import * as rootDir from "../util/path";
 import server from "../app";
 import { PathUtils } from "../util/path";
 import { Image } from "models/image";
 
-let pathUtils = Container.get(PathUtils);
+let pathUtils = PathUtils.getInstance();
 let should = chai.should();
 chai.use(chaiHttp);
 
