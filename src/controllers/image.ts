@@ -29,8 +29,10 @@ export class ImageController {
   public async resize(req: any, res: any): Promise<void> {
     let imgName = (req.path as string).replace('/image', '');
     let file = path.join(this.pathUtils.imagesPath, imgName);
-    if (file.indexOf(this.pathUtils.imagesPath + path.sep) !== 0) {
-      return res.status(403).end('Forbidden');
+
+    let imgValidation = await this.validateRequestedImage(file);
+    if (imgValidation.code != 200) {
+      return res.status(imgValidation.code).end(imgValidation.message);
     }
 
     let image: Image;
@@ -83,5 +85,20 @@ export class ImageController {
 
     let img: Image = { width: width, height: height, path: '' };
     return img;
+  }
+
+  private async validateRequestedImage(filePath: string): Promise<{ message: string, code: number }> {
+    if (filePath.indexOf(this.pathUtils.imagesPath + path.sep) !== 0) {
+      return { message: 'Forbidden', code: 403 };
+    }
+
+    try {
+      await fs.promises.access(filePath);
+    }
+    catch (error) {
+      return { message: 'Image not found!', code: 400 };
+    }
+
+    return { message: '', code: 200 };
   }
 }
