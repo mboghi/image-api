@@ -18,3 +18,8 @@ Endpoint will return this info about the cache:
 - number of hits vs misses (hits/misses)
 - number of original images
 - number of resized images
+
+## Using instructions
+For running the API, after cloning the repository, you can run these commands:
+- npm run build
+- npm run dev
