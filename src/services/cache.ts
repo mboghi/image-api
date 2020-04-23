@@ -44,6 +44,7 @@ export class ImagesCache {
     let existingItems = this.usageStats.cachedImages.filter((item) => item.path === resizedImagePath);
     if (existingItems.length == 1) {
       existingItems[0].newHits += 1;
+      this.usageStats.hits += 1;
       return;
     }
     this.usageStats.cachedImages.push({
@@ -52,6 +53,8 @@ export class ImagesCache {
       isOriginal: false,
       path: resizedImagePath
     });
+    this.usageStats.resizedImagesNo += 1;
+    this.usageStats.misses += 1;
   }
 
   public async addNewImage(newImagePath: string): Promise<void> {
@@ -59,6 +62,7 @@ export class ImagesCache {
     let existingItems = this.usageStats.cachedImages.filter((item) => item.path === newImagePath);
     if (existingItems.length == 1) {
       existingItems[0].newHits += 1;
+      this.usageStats.hits += 1;
       return;
     }
     this.usageStats.cachedImages.push({
@@ -67,5 +71,6 @@ export class ImagesCache {
       isOriginal: true,
       path: newImagePath
     });
+    this.usageStats.misses += 1;
   }
 }

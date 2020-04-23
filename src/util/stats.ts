@@ -3,10 +3,15 @@ import { CachedImage } from "models/stats";
 export class UsageStats {
   public cachedImages: CachedImage[];
   private static instance: UsageStats;
-
+  public resizedImagesNo: number;
+  public hits: number;
+  public misses: number;
 
   private constructor() {
     this.cachedImages = [];
+    this.resizedImagesNo = 0;
+    this.hits = 0;
+    this.misses = 0;
   }
 
   public static getInstance() {
@@ -14,10 +19,6 @@ export class UsageStats {
       UsageStats.instance = new UsageStats();
     }
     return UsageStats.instance;
-  }
-
-  public resizedImagesNo(): number {
-    return this.cachedImages.length - this.originalImagesNo();
   }
 
   public originalImagesNo(): number {

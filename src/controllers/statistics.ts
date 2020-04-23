@@ -14,20 +14,10 @@ export class StatisticsController {
   }
 
   public async getStats(req: any, res: any): Promise<void> {
-    let hits: number = 0;
-    let misses: number = 0;
-    await this.usageStats.cachedImages.forEach((img) => {
-      if (img.hits + img.newHits > 0) {
-        hits++;
-      } else {
-        misses++;
-      }
-    })
-
     let stats: ServiceStats = {
-      hits_vs_Misses: `${hits}/${misses}`,
+      hits_vs_Misses: `${this.usageStats.hits}/${this.usageStats.misses}`,
       originalImagesNo: this.usageStats.originalImagesNo(),
-      resizedImagesNo: this.usageStats.resizedImagesNo()
+      resizedImagesNo: this.usageStats.resizedImagesNo
     };
     //this.cache.performCacheCleanup();
     res.set('Content-Type', 'application/json');
