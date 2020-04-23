@@ -8,7 +8,7 @@ import { ImagesCache } from "./cache";
 
 @Service()
 export class ImageService {
-  private cache: ImagesCache;
+  public cache: ImagesCache;
 
   constructor(imagesCache: ImagesCache) {
     this.cache = imagesCache;
