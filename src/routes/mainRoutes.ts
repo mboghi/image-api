@@ -1,8 +1,8 @@
 import * as express from "express";
 import { Container } from 'typedi';
 
-import { ImageController } from "../controllers/image";
 import { StatisticsController } from "../controllers/statistics";
+import { ImageController } from "../controllers/image";
 
 class MainRoutes {
   public router: express.Router = express.Router();

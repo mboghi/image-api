@@ -5,19 +5,10 @@ import { Service } from "typedi";
 import { PathUtils } from "../util/path";
 import { ImageService } from "../services/image";
 import { Image } from "models/image";
+import { MimeTypes } from "../util/mimeTypes"
 
 @Service()
 export class ImageController {
-  private mime: { [key: string]: string } = {
-    html: 'text/html',
-    txt: 'text/plain',
-    css: 'text/css',
-    gif: 'image/gif',
-    jpg: 'image/jpeg',
-    png: 'image/png',
-    svg: 'image/svg+xml',
-    js: 'application/javascript'
-  };
 
   private imageService: ImageService;
   private pathUtils: PathUtils = PathUtils.getInstance();
@@ -48,7 +39,7 @@ export class ImageController {
     let imgPath = await this.imageService.resizeImage(image);
 
     let extName: string = path.extname(imgPath).slice(1);
-    let type = this.mime[extName] || 'text/plain';
+    let type = MimeTypes.mime[extName] || 'text/plain';
     let s = fs.createReadStream(imgPath);
     s.on('open', function () {
       res.set('Content-Type', type);
@@ -88,7 +79,7 @@ export class ImageController {
   }
 
   private async validateRequestedImage(filePath: string): Promise<{ message: string, code: number }> {
-    if (filePath.indexOf(this.pathUtils.imagesPath + path.sep) !== 0) {
+    if (filePath === this.pathUtils.imagesPath + path.sep) {
       return { message: 'Forbidden', code: 403 };
     }
 

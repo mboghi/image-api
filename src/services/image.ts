@@ -1,18 +1,14 @@
 import * as path from "path";
 import * as jimp from "jimp";
 import * as fs from 'fs';
-import { Service } from "typedi";
+import Container, { Service } from "typedi";
 
 import { Image } from "../models/image";
 import { ImagesCache } from "./cache";
 
 @Service()
 export class ImageService {
-  public cache: ImagesCache;
-
-  constructor(imagesCache: ImagesCache) {
-    this.cache = imagesCache;
-  }
+  public cache: ImagesCache = Container.get(ImagesCache);
 
   public async resizeImage(imageSpecs: Image): Promise<string> {
     let extension = path.extname(imageSpecs.path);
