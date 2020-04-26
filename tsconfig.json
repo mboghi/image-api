@@ -18,6 +18,7 @@
       "esnext"
     ],
     "outDir": "./dist",
+    "rootDir": ".",
     "baseUrl": "./src",
     "alwaysStrict": true
   },

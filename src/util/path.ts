@@ -4,7 +4,7 @@ import * as process from 'process';
 export class PathUtils {
   private static instance: PathUtils;
   public rootPath: string;
-  public imagesPath: string = "C:\\images";
+  public imagesPath: string = path.join('images');
 
   private constructor() {
     this.rootPath = path.dirname(process.mainModule?.filename ?? "");

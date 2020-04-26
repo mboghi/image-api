@@ -12,6 +12,10 @@ export class ImagesCache {
 
   public async performCacheCleanup(): Promise<void> {
     fs.readdir(this.pathUtils.imagesPath, (err, files) => {
+      if (err) {
+        throw new Error(err.message);
+      }
+
       files.forEach(async (file: string, index: number) => {
         let existingItems = this.usageStats.cachedImages.filter((item) => item.path === file);
         if (existingItems.length === 0) {

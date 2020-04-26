@@ -25,3 +25,8 @@ The default source path for loadin the images is **_C:\images_**. It can be chan
 For running the API, after cloning the repository, you can run these commands:
 - npm run build
 - npm run dev
+
+## Docker instructions
+To build the docker image use command: **_docker build -t image-api ._**
+
+To run the docker image use command: **_docker run -d --name image-api -p 8080:3000 image-api_**
