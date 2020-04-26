@@ -19,7 +19,7 @@ Endpoint will return this info about the cache:
 - number of original images
 - number of resized images
 
-## Using instructions
+## Running instructions
 The default source path for loadin the images is **_\images_**, relative to the root path. It can be changed before running the app in /src/util/path.ts
 
 For running the API, after cloning the repository, you can run these commands:
