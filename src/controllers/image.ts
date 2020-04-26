@@ -17,6 +17,7 @@ export class ImageController {
     this.imageService = imageService;
   }
 
+  // Serve and resize requested image
   public async resize(req: any, res: any): Promise<void> {
     let imgName = (req.path as string).replace('/image', '');
     let file = path.join(this.pathUtils.imagesPath, imgName);
@@ -36,11 +37,11 @@ export class ImageController {
     }
 
     image.path = file;
-    let imgPath = await this.imageService.resizeImage(image);
+    let resizedImgPath = await this.imageService.resizeImage(image);
 
-    let extName: string = path.extname(imgPath).slice(1);
+    let extName: string = path.extname(resizedImgPath).slice(1);
     let type = MimeTypes.mime[extName] || 'text/plain';
-    let s = fs.createReadStream(imgPath);
+    let s = fs.createReadStream(resizedImgPath);
     s.on('open', function () {
       res.set('Content-Type', type);
       s.pipe(res);
@@ -51,6 +52,7 @@ export class ImageController {
     });
   };
 
+  // Parse query string and validate it for wrong formats
   private parseRequestQuery(queryString: any): Image {
     let width: number = 0;
     let height: number = 0;
@@ -78,6 +80,7 @@ export class ImageController {
     return img;
   }
 
+  // Check if requested image exists and if it can be accessed
   private async validateRequestedImage(filePath: string): Promise<{ message: string, code: number }> {
     if (filePath === this.pathUtils.imagesPath + path.sep) {
       return { message: 'Forbidden', code: 403 };

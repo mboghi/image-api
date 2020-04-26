@@ -10,6 +10,7 @@ import { ImagesCache } from "./cache";
 export class ImageService {
   public cache: ImagesCache = Container.get(ImagesCache);
 
+  // Resize image to specified size
   public async resizeImage(imageSpecs: Image): Promise<string> {
     let extension = path.extname(imageSpecs.path);
     let resizedExt: string = extension;

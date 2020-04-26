@@ -13,6 +13,7 @@ export class StatisticsController {
     this.cache = imagesCache;
   }
 
+  // Compute and return statistics about the images service and cache 
   public async getStats(req: any, res: any): Promise<void> {
     let stats: ServiceStats = {
       hits_vs_Misses: `${this.usageStats.hits}/${this.usageStats.misses}`,

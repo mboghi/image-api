@@ -17,12 +17,20 @@ import { ImagesCache } from "../services/cache";
 
 let pathUtils = PathUtils.getInstance();
 let should = chai.should();
+let imgNames: string[] = [];
 
 chai.use(chaiHttp);
 
 describe("Image Service Positive", () => {
   before(() => {
     sinon.stub(ImagesCacheStub, 'ImagesCache').returns(new ImagesCache());
+  });
+
+  after(async () => {
+    await imgNames.forEach(async (img) => {
+      await fs.unlink(path.join(pathUtils.imagesPath, img), (err) => { });
+    });
+    imgNames = [];
   });
 
   it('should return resized image path', async () => {
@@ -33,20 +41,25 @@ describe("Image Service Positive", () => {
         "height": 200
       }
     };
-    let imgPath = path.join(pathUtils.imagesPath, 'plane.jfif');
+    let imgName = 'plane.jfif';
+    let expectedImgName = 'plane_200x200.jfif';
+    imgNames.push(expectedImgName);
+    let imgPath = path.join(pathUtils.imagesPath, imgName);
     let imageService = Container.get(ImageService);
     let img: Image = { path: imgPath, width: 200, height: 200 };
     const rsImgPath = await imageService.resizeImage(img);
 
-    expect(rsImgPath).to.equal(path.join(pathUtils.imagesPath, 'plane_200x200.jfif'));
+    expect(rsImgPath).to.equal(path.join(pathUtils.imagesPath, expectedImgName));
   });
 
   let runs = [...Array(5).keys()].map(i => i + 400);
 
   runs.forEach((run) => {
     it(`should return resized images #${run - 400}`, (done) => {
+      let size = `300x${run}`;
+      imgNames.push(`elephant_${size}.jpg`);
       chai.request(server)
-        .get(`/image/elephant.jpg?size=300x${run}`)
+        .get(`/image/elephant.jpg?size=${size}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
@@ -79,6 +92,21 @@ describe("Image Service Negative", () => {
       .get(`/image/`)
       .end((err, res) => {
         res.should.have.status(403);
+        done();
+      });
+  });
+});
+
+describe("Statistics Service Positive", () => {
+
+  it(`should return stats`, (done) => {
+    chai.request(server)
+      .get(`/stats`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body.hits_vs_Misses).to.equal('0/6');
+        expect(res.body.originalImagesNo).to.equal(4);
+        expect(res.body.resizedImagesNo).to.equal(6);
         done();
       });
   });
