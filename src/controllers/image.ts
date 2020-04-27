@@ -6,6 +6,7 @@ import { PathUtils } from "../util/path";
 import { ImageService } from "../services/image";
 import { Image } from "models/image";
 import { MimeTypes } from "../util/mimeTypes"
+import { Result } from "../util/result";
 
 @Service()
 export class ImageController {
@@ -27,21 +28,25 @@ export class ImageController {
       return res.status(imgValidation.code).end(imgValidation.message);
     }
 
-    let image: Image;
-    try {
-      image = this.parseRequestQuery(req.query);
-    }
-    catch (error) {
+    let imageResult = this.parseRequestQuery(req.query);
+    if (imageResult.isFailure) {
       res.set('Content-Type', 'text/plain');
-      return res.status(400).end(error.message);
+      return res.status(400).end(imageResult.error);
     }
 
+    let image = imageResult.getValue();
     image.path = file;
     let resizedImgPath = await this.imageService.resizeImage(image);
 
-    let extName: string = path.extname(resizedImgPath).slice(1);
+    if (resizedImgPath.isFailure) {
+      res.set('Content-Type', 'text/plain');
+      return res.status(400).end(resizedImgPath.error);
+    }
+
+    let imagePath = resizedImgPath.getValue();
+    let extName: string = path.extname(imagePath).slice(1);
     let type = MimeTypes.mime[extName] || 'text/plain';
-    let s = fs.createReadStream(resizedImgPath);
+    let s = fs.createReadStream(imagePath);
     s.on('open', function () {
       res.set('Content-Type', type);
       s.pipe(res);
@@ -53,14 +58,14 @@ export class ImageController {
   };
 
   // Parse query string and validate it for wrong formats
-  private parseRequestQuery(queryString: any): Image {
+  private parseRequestQuery(queryString: any): Result<Image> {
     let width: number = 0;
     let height: number = 0;
     let imgSize: string = queryString?.size;
     if (imgSize && imgSize.length > 0) {
       let sizes: string[] = imgSize.toLowerCase().split('x');
       if (sizes.length !== 2) {
-        throw new Error('Query parameter size has a bad format! It should be size=(width)x(height)');
+        return Result.fail('Query parameter size has a bad format! It should be size=(width)x(height)');
       }
       let errorMsg: string = "";
       width = Number(sizes[0]);
@@ -72,12 +77,12 @@ export class ImageController {
         errorMsg += `\nValue ${sizes[1]} for height is not a valid number.`;
       }
       if (errorMsg !== "") {
-        throw new Error(errorMsg);
+        return Result.fail(errorMsg);
       }
     }
 
     let img: Image = { width: width, height: height, path: '' };
-    return img;
+    return Result.ok(img);
   }
 
   // Check if requested image exists and if it can be accessed

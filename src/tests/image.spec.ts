@@ -47,7 +47,7 @@ describe("Image Service Positive", () => {
     let imgPath = path.join(pathUtils.imagesPath, imgName);
     let imageService = Container.get(ImageService);
     let img: Image = { path: imgPath, width: 200, height: 200 };
-    const rsImgPath = await imageService.resizeImage(img);
+    const rsImgPath = await (await imageService.resizeImage(img)).getValue();
 
     expect(rsImgPath).to.equal(path.join(pathUtils.imagesPath, expectedImgName));
   });

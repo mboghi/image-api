@@ -30,3 +30,7 @@ For running the API, after cloning the repository, you can run these commands:
 To build the docker image use command: **_docker build -t image-api ._**
 
 To run the docker image use command: **_docker run -d --name image-api -p 8080:3000 image-api_**
+Service will be available at link **_http://localhost:8080/_**
+
+To stop the container run command: **_docker stop image-api_**
+To delete the container run command: **_docker rm image-api_**
