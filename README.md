@@ -26,6 +26,8 @@ For running the API, after cloning the repository, you can run these commands:
 - npm run build
 - npm run dev
 
+The application will be runing at this link **_http://localhost:3000_**
+
 ## Docker instructions
 To build the docker image use command: **_docker build -t image-api ._**
 
